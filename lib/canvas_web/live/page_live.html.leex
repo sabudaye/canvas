@@ -1,0 +1,9 @@
+<section>
+  <h1>Canvas size <%= @canvas.cols %>x<%= @canvas.rows %></h1>
+  <%= for row <- (0..@canvas.rows) do %>
+    <%= for col <- (0..@canvas.cols) do %>
+      <%= Enum.at(@canvas.chars, row + col) %>
+    <% end %>
+    <br>
+  <% end %>
+</section>
