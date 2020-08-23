@@ -1,8 +1,23 @@
 <section>
   <h1>Canvas size <%= @canvas.cols %>x<%= @canvas.rows %></h1>
-  <%= for row <- (0..@canvas.rows) do %>
-    <%= for col <- (0..@canvas.cols) do %>
-      <%= Enum.at(@canvas.chars, row + col) %>
+  <form phx-submit="draw_rectangle">
+    <input class="small" type="number" min="0" max="<%= @canvas.cols %>" name="x" value="0" size="2"/>
+    <input class="small" type="number" min="0" max="<%= @canvas.rows %>" name="y" value="0" size="2"/>
+    <input class="small" type="number" min="0" max="<%= @canvas.cols %>" name="w" value="5" size="2"/>
+    <input class="small" type="number" min="0" max="<%= @canvas.rows %>" name="h" value="5" size="2"/>
+    <input class="small" name="oc" minlength="1" maxlength="1" value="X" size="2"/>
+    <input class="small" name="fc" minlength="1" maxlength="1" value=" " size="2"/>
+    <%= submit "Draw" %>
+  </form>
+  <button phx-click="reset">Reset</button>
+  <br>
+  <%= for row <- (0..@canvas.rows - 1) do %>
+    <%= for col <- (0..@canvas.cols - 1) do %>
+      <%= if get_char(@canvas.chars, row, col) == " " do %>
+        &nbsp;
+      <% else %>
+        <%= get_char(@canvas.chars, row, col) %>
+      <% end %>
     <% end %>
     <br>
   <% end %>
