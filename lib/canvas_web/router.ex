@@ -18,12 +18,16 @@ defmodule CanvasWeb.Router do
     pipe_through :browser
 
     live "/", PageLive, :index
+    live "/canvas/:id", PageLive, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", CanvasWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", CanvasWeb do
+    pipe_through :api
+
+    post "/canvas", CanvasController, :new
+    get "/canvas/:id", CanvasController, :show
+    post "/canvas/:id/rectangle", CanvasController, :draw_rectangle
+  end
 
   # Enables LiveDashboard only for development
   #

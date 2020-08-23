@@ -4,9 +4,8 @@ defmodule CanvasWeb.PageLiveTest do
   import Phoenix.LiveViewTest
 
   test "disconnected and connected render", %{conn: conn} do
-    {:ok, page_live, disconnected_html} = live(conn, "/")
-    assert disconnected_html =~ "Canvas size"
-    assert render(page_live) =~ "Canvas size"
+    {:ok, page_live, _disconnected_html} = live(conn, "/")
+    assert render(page_live) =~ "Update"
     assert render(page_live) =~ "Draw"
     assert render(page_live) =~ "Reset"
   end

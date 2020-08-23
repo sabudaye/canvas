@@ -12,7 +12,9 @@ defmodule Canvas.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Canvas.PubSub},
       # Start the Endpoint (http/https)
-      CanvasWeb.Endpoint
+      CanvasWeb.Endpoint,
+      Canvas.Counter,
+      {Registry, keys: :unique, name: CanvasStorageRegistry}
       # Start a worker by calling: Canvas.Worker.start_link(arg)
       # {Canvas.Worker, arg}
     ]

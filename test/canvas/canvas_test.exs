@@ -12,14 +12,30 @@ defmodule Canvas.MatrixTest do
   end
 
   test "draw/2 draws rectangle on canvas" do
-    rectangle = %Rectangle{pos_row: 1, pos_col: 1, width: 10, height: 10, fill_char: "X", outline_char: "Y"}
+    rectangle = %Rectangle{
+      pos_row: 1,
+      pos_col: 1,
+      width: 10,
+      height: 10,
+      fill_char: "X",
+      outline_char: "Y"
+    }
+
     canvas = Matrix.draw(Matrix.new(), rectangle)
     assert count_chars(canvas.chars, "Y") == 36
     assert count_chars(canvas.chars, "X") == 64
   end
 
   test "reset/1 cleans up the canvas to default state" do
-    rectangle = %Rectangle{pos_row: 1, pos_col: 1, width: 10, height: 10, fill_char: "X", outline_char: "Y"}
+    rectangle = %Rectangle{
+      pos_row: 1,
+      pos_col: 1,
+      width: 10,
+      height: 10,
+      fill_char: "X",
+      outline_char: "Y"
+    }
+
     canvas = Matrix.draw(Matrix.new(), rectangle)
     assert count_chars(canvas.chars, "Y") == 36
     canvas = Matrix.reset(canvas)
