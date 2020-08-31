@@ -28,7 +28,13 @@ defmodule CanvasWeb.ChannelCase do
     end
   end
 
-  setup _tags do
+  setup tags do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Canvas.Repo)
+
+    unless tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(Canvas.Repo, {:shared, self()})
+    end
+
     :ok
   end
 end
