@@ -1,5 +1,5 @@
 <section>
-  <h1>Canvas size <%= @canvas.cols %>x<%= @canvas.rows %></h1>
+  <h1>Canvas id <%= @canvas_id %> size <%= @canvas.cols %>x<%= @canvas.rows %></h1>
   <form phx-submit="draw_rectangle">
     <input class="small" type="number" min="0" max="<%= @canvas.cols %>" name="x" value="0" size="2"/>
     <input class="small" type="number" min="0" max="<%= @canvas.rows %>" name="y" value="0" size="2"/>

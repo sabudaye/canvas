@@ -6,6 +6,7 @@
 
 # General application configuration
 use Mix.Config
+
 config :canvas,
   ecto_repos: [Canvas.Repo]
 

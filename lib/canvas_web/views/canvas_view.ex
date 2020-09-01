@@ -1,15 +1,24 @@
 defmodule CanvasWeb.CanvasView do
   use CanvasWeb, :view
-  alias Canvas.CanvasMap
+  alias __MODULE__
 
-  def render("canvas.json", %{canvas_id: id, canvas: %CanvasMap{chars: chars}}) do
-    Enum.reduce(chars, "id: #{id}\n", fn row, acc1 ->
-      c_row =
-        Enum.reduce(row, fn char, acc2 ->
-          acc2 <> char
-        end)
+  def render("show.json", %{canvas: canvas}) do
+    %{data: render_one(canvas, CanvasView, "canvas.json")}
+  end
 
-      acc1 <> c_row <> "\n"
-    end)
+  def render("canvas.json", %{canvas: canvas}) do
+    chars =
+      Enum.reduce(canvas.chars, %{}, fn {{x, y}, val}, acc ->
+        key_x = Integer.to_string(x)
+        key_y = Integer.to_string(y)
+
+        if Map.has_key?(acc, key_x) do
+          put_in(acc, [key_x, key_y], val)
+        else
+          Map.put_new(acc, key_x, %{key_y => val})
+        end
+      end)
+
+    %{id: canvas.id, rows: canvas.rows, cols: canvas.cols, chars: chars}
   end
 end

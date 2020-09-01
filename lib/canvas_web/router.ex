@@ -26,7 +26,7 @@ defmodule CanvasWeb.Router do
 
     post "/canvas", CanvasController, :new
     get "/canvas/:id", CanvasController, :show
-    post "/canvas/:id/rectangle", CanvasController, :draw_rectangle
+    post "/canvas/:id/draw", CanvasController, :draw
   end
 
   # Enables LiveDashboard only for development

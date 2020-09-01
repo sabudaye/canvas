@@ -1,12 +1,19 @@
 defmodule CanvasWeb.PageLive do
   use CanvasWeb, :live_view
 
-  alias Canvas.{Rectangle, CanvasMap, FloodFill}
+  alias Canvas.{Rectangle, FloodFill}
+  alias Canvas.Feature.Drawing
+
+  @impl true
+  def mount(%{"id" => canvas_id}, _session, socket) do
+    {:ok, canvas} = Drawing.get(canvas_id)
+    {:ok, assign(socket, canvas_id: canvas.id, canvas: canvas)}
+  end
 
   @impl true
   def mount(_params, _session, socket) do
-    canvas = CanvasMap.new()
-    {:ok, assign(socket, canvas: canvas)}
+    {:ok, canvas} = Drawing.new()
+    {:ok, assign(socket, canvas_id: canvas.id, canvas: canvas)}
   end
 
   @impl true
@@ -15,7 +22,7 @@ defmodule CanvasWeb.PageLive do
         %{"x" => x, "y" => y, "w" => w, "h" => h, "fc" => fc, "oc" => oc},
         socket
       ) do
-    %{canvas: canvas} = socket.assigns
+    %{canvas_id: canvas_id} = socket.assigns
 
     rectangle = %Rectangle{
       pos_col: String.to_integer(x),
@@ -26,7 +33,7 @@ defmodule CanvasWeb.PageLive do
       outline_char: oc
     }
 
-    new_canvas = CanvasMap.draw(canvas, rectangle)
+    {:ok, new_canvas} = Drawing.add_rectangle(canvas_id, rectangle)
     {:noreply, assign(socket, :canvas, new_canvas)}
   end
 
@@ -36,27 +43,29 @@ defmodule CanvasWeb.PageLive do
         %{"x" => x, "y" => y, "fc" => fc},
         socket
       ) do
-    %{canvas: canvas} = socket.assigns
+    %{canvas_id: canvas_id} = socket.assigns
 
     flood_fill = %FloodFill{
       pos_col: String.to_integer(x),
       pos_row: String.to_integer(y),
-      flood_char: fc,
+      flood_char: fc
     }
 
-    new_canvas = CanvasMap.draw(canvas, flood_fill)
+    {:ok, new_canvas} = Drawing.flood_fill(canvas_id, flood_fill)
     {:noreply, assign(socket, :canvas, new_canvas)}
   end
 
   @impl true
   def handle_event("reset", _, socket) do
-    %{canvas: canvas} = socket.assigns
-    {:noreply, assign(socket, :canvas, CanvasMap.reset(canvas))}
+    %{canvas_id: canvas_id} = socket.assigns
+    {:ok, canvas} = Drawing.reset(canvas_id)
+    {:noreply, assign(socket, :canvas, canvas)}
   end
 
   @impl true
   def handle_event("update", _, socket) do
-    %{canvas: canvas} = socket.assigns
+    %{canvas_id: canvas_id} = socket.assigns
+    {:ok, canvas} = Drawing.get(canvas_id)
     {:noreply, assign(socket, :canvas, canvas)}
   end
 

@@ -1,9 +1,10 @@
-defmodule Canvas.CanvasMapTest do
-  use ExUnit.Case
-  alias Canvas.{CanvasMap, Rectangle, FloodFill}
+defmodule Canvas.Feature.DrawingTest do
+  use Canvas.DataCase
+  alias Canvas.{Rectangle, FloodFill}
+  alias Canvas.Feature.Drawing
 
   test "new/0 returns map with {x, y} as keys and fill char as value" do
-    canvas = CanvasMap.new(3, 3, " ")
+    {:ok, canvas} = Drawing.new(3, 3, " ")
     assert canvas.rows == 3
     assert canvas.cols == 3
 
@@ -32,8 +33,8 @@ defmodule Canvas.CanvasMapTest do
       outline_char: "X"
     }
 
-    canvas = CanvasMap.new(3, 3, " ")
-    canvas = CanvasMap.draw(canvas, rectangle)
+    {:ok, canvas} = Drawing.new(3, 3, " ")
+    {:ok, new_canvas} = Drawing.add_rectangle(canvas.id, rectangle)
 
     expected_map = %{
       {0, 0} => "X",
@@ -47,7 +48,7 @@ defmodule Canvas.CanvasMapTest do
       {2, 2} => " "
     }
 
-    assert ^expected_map = canvas.chars
+    assert ^expected_map = new_canvas.chars
   end
 
   test "draw/2 draws rectangle with fill chars on canvas" do
@@ -60,8 +61,8 @@ defmodule Canvas.CanvasMapTest do
       outline_char: "X"
     }
 
-    canvas = CanvasMap.new(3, 3, " ")
-    canvas = CanvasMap.draw(canvas, rectangle)
+    {:ok, canvas} = Drawing.new(3, 3, " ")
+    {:ok, new_canvas} = Drawing.add_rectangle(canvas.id, rectangle)
 
     expected_map = %{
       {0, 0} => "X",
@@ -75,7 +76,7 @@ defmodule Canvas.CanvasMapTest do
       {2, 2} => "X"
     }
 
-    assert ^expected_map = canvas.chars
+    assert ^expected_map = new_canvas.chars
   end
 
   test "draw/2 draws flood fill on canvas" do
@@ -94,10 +95,9 @@ defmodule Canvas.CanvasMapTest do
       flood_char: "O"
     }
 
-    canvas =
-      CanvasMap.new(5, 4, " ")
-      |> CanvasMap.draw(rectangle)
-      |> CanvasMap.draw(flood_fill)
+    {:ok, canvas} = Drawing.new(5, 4, " ")
+    {:ok, canvas} = Drawing.add_rectangle(canvas.id, rectangle)
+    {:ok, new_canvas} = Drawing.flood_fill(canvas.id, flood_fill)
 
     expected_map = %{
       {0, 0} => "O",
@@ -122,6 +122,6 @@ defmodule Canvas.CanvasMapTest do
       {4, 3} => "O"
     }
 
-    assert ^expected_map = canvas.chars
+    assert ^expected_map = new_canvas.chars
   end
 end

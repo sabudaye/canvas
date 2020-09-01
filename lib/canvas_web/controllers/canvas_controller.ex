@@ -1,32 +1,52 @@
 defmodule CanvasWeb.CanvasController do
   use CanvasWeb, :controller
 
-  alias Canvas.{Rectangle, CanvasMap}
+  alias Canvas.{Rectangle, FloodFill}
+  alias Canvas.Feature.Drawing
 
-  def new(conn, _params) do
-    canvas = CanvasMap.new()
-    render(conn, "canvas.txt", %{canvas: canvas})
+  def new(conn, %{"canvas" => canvas_params}) do
+    with %{"rows" => rows, "cols" => cols, "fill_char" => fill_char} <- canvas_params,
+         {:ok, canvas} <- Drawing.new(rows, cols, fill_char) do
+      conn
+      |> put_status(:created)
+      |> put_resp_header("location", Routes.canvas_path(conn, :show, canvas))
+      |> render("show.json", %{canvas: canvas})
+    end
   end
 
-  # def show(conn, %{"id" => canvas_id}) do
-  #   [{storage, nil}] = Registry.lookup(CanvasStorageRegistry, "canvas#{canvas_id}")
-  #   render(conn, "canvas.txt", %{canvas_id: canvas_id, canvas: Storage.value(storage)})
-  # end
-
-  def draw_rectangle(conn, params) do
-    %{"x" => x, "y" => y, "w" => w, "h" => h, "fc" => fc, "oc" => oc} = params
-
-    rectangle = %Rectangle{
-      pos_col: x,
-      pos_row: y,
-      width: w,
-      height: h,
-      fill_char: fc,
-      outline_char: oc
-    }
-
-    canvas = CanvasMap.new()
-    new_canvas = CanvasMap.draw(canvas, rectangle)
-    render(conn, "canvas.txt", %{canvas: new_canvas})
+  def show(conn, %{"id" => canvas_id}) do
+    with {:ok, canvas} <- Drawing.get(canvas_id) do
+      render(conn, "show.json", %{canvas: canvas})
+    end
   end
+
+  def draw(conn, %{"id" => canvas_id, "rectangle" => rectangle_params}) do
+    with %{"row" => row, "col" => col, "width" => width, "height" => height} <- rectangle_params,
+         rectangle = %Rectangle{
+           pos_row: to_int(row),
+           pos_col: to_int(col),
+           width: to_int(width),
+           height: to_int(height),
+           fill_char: rectangle_params["fc"],
+           outline_char: rectangle_params["oc"]
+         },
+         {:ok, new_canvas} = Drawing.add_rectangle(canvas_id, rectangle) do
+      render(conn, "show.json", %{canvas: new_canvas})
+    end
+  end
+
+  def draw(conn, %{"id" => canvas_id, "flood_fill" => flood_fill_params}) do
+    with %{"row" => row, "col" => col, "fc" => fc} <- flood_fill_params,
+         flood_fill = %FloodFill{
+           pos_row: to_int(row),
+           pos_col: to_int(col),
+           flood_char: fc
+         },
+         {:ok, new_canvas} = Drawing.flood_fill(canvas_id, flood_fill) do
+      render(conn, "show.json", %{canvas: new_canvas})
+    end
+  end
+
+  defp to_int(val) when is_integer(val), do: val
+  defp to_int(val) when is_binary(val), do: String.to_integer(val)
 end
