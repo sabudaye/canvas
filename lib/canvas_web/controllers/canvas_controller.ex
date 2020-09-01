@@ -47,7 +47,7 @@ defmodule CanvasWeb.CanvasController do
     end
   end
 
-  def draw(conn, params) do
+  def draw(conn, _params) do
     conn
     |> put_status(:bad_request)
     |> render("error.json", %{})

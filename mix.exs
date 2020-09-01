@@ -46,7 +46,8 @@ defmodule Canvas.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.4"},
-      {:postgrex, "~> 0.15"}
+      {:postgrex, "~> 0.15"},
+      {:credo, "~> 1.4", only: [:dev, :test], runtime: false}
     ]
   end
 
