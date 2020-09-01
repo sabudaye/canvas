@@ -45,9 +45,7 @@ defmodule Canvas.Feature.Drawing do
     with {:ok, canvas} <- get_canvas(canvas_id) do
       chars = make_chars(canvas.rows, canvas.cols, canvas.fill_char)
 
-      canvas
-      |> CanvasMap.changeset(%{chars: chars})
-      |> Repo.update()
+      update_canvas(canvas, chars)
     end
   end
 
@@ -70,9 +68,7 @@ defmodule Canvas.Feature.Drawing do
           end
         end)
 
-      canvas
-      |> CanvasMap.changeset(%{chars: Map.new(chars)})
-      |> Repo.update()
+      update_canvas(canvas, chars)
     else
       {:rows, _} ->
         {:error, "Row position is out of canvas max size (1 to 200)"}
@@ -103,9 +99,7 @@ defmodule Canvas.Feature.Drawing do
       char_to_replace = Map.get(canvas.chars, start)
       chars = flood(canvas.chars, flood_char, char_to_replace, [start], [])
 
-      canvas
-      |> CanvasMap.changeset(%{chars: Map.new(chars)})
-      |> Repo.update()
+      update_canvas(canvas, chars)
     else
       {:rows, _} ->
         {:error, "Row position is out of canvas max size (1 to 200)"}
@@ -119,6 +113,16 @@ defmodule Canvas.Feature.Drawing do
       error ->
         error
     end
+  end
+
+  defp update_canvas(canvas, chars) do
+    result =
+      canvas
+      |> CanvasMap.changeset(%{chars: Map.new(chars)})
+      |> Repo.update()
+
+    Canvas.LiveUpdates.notify_live_view(canvas.id)
+    result
   end
 
   defp one_of_either(nil = _outline_char, nil = _fill_char), do: {:char, :none}

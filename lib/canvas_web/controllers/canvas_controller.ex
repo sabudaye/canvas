@@ -47,6 +47,12 @@ defmodule CanvasWeb.CanvasController do
     end
   end
 
+  def draw(conn, params) do
+    conn
+    |> put_status(:bad_request)
+    |> render("error.json", %{})
+  end
+
   defp to_int(val) when is_integer(val), do: val
   defp to_int(val) when is_binary(val), do: String.to_integer(val)
 end

@@ -21,4 +21,8 @@ defmodule CanvasWeb.CanvasView do
 
     %{id: canvas.id, rows: canvas.rows, cols: canvas.cols, chars: chars}
   end
+
+  def render("error.json", _) do
+    %{error: "paramteres are incorrect"}
+  end
 end
