@@ -1,36 +1,8 @@
 <section>
-  <h1>Canvas id <%= @canvas_id %> size <%= @canvas.cols %>x<%= @canvas.rows %></h1>
-  <form phx-submit="draw_rectangle">
-    <input class="small" type="number" min="0" max="<%= @canvas.cols %>" name="x" value="0" size="2"/>
-    <input class="small" type="number" min="0" max="<%= @canvas.rows %>" name="y" value="0" size="2"/>
-    <input class="small" type="number" min="0" max="<%= @canvas.cols %>" name="w" value="5" size="2"/>
-    <input class="small" type="number" min="0" max="<%= @canvas.rows %>" name="h" value="5" size="2"/>
-    <input class="small" name="oc" minlength="1" maxlength="1" value="X" size="2"/>
-    <input class="small" name="fc" minlength="1" maxlength="1" value=" " size="2"/>
-    <%= submit "Draw" %>
-  </form>
-  <form phx-submit="draw_flood_fiil">
-    <input class="small" type="number" min="0" max="<%= @canvas.cols %>" name="x" value="0" size="2"/>
-    <input class="small" type="number" min="0" max="<%= @canvas.rows %>" name="y" value="0" size="2"/>
-    <input class="small" name="fc" minlength="1" maxlength="1" value="O" size="2"/>
-    <%= submit "Draw" %>
-  </form>
-  <button phx-click="reset">Reset</button>
-  <button phx-click="update">Update</button>
-  <br>
-  <table class="canvas">
-  <%= for row <- (0..@canvas.rows - 1) do %>
-    <tr>
-    <%= for col <- (0..@canvas.cols - 1) do %>
-      <td>
-      <%= if get_char(@canvas.chars, row, col) == " " do %>
-        &nbsp;
-      <% else %>
-        <%= get_char(@canvas.chars, row, col) %>
-      <% end %>
-      </td>
-    <% end %>
-    </tr>
+  <h1>List of Canvases </h1>
+  <ul>
+  <%= for i <- (1..length(@canvases)-1) do %>
+    <li><a href="<%= Routes.canvas_path(CanvasWeb.Endpoint, :index, Enum.at(@canvases, i).id) %>">Canvas #<%= i + 1 %></a></li>
   <% end %>
-  </table>
+  </ul>
 </section>

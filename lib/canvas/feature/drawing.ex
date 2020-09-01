@@ -15,6 +15,10 @@ defmodule Canvas.Feature.Drawing do
   @size_range 1..200
   @ascii_char_codes 32..126
 
+  def all() do
+    Repo.all(from cm in CanvasMap, select: %{id: cm.id})
+  end
+
   def new(
         rows \\ @default_canvas_rows,
         cols \\ @default_canvas_cols,
