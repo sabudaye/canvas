@@ -2,7 +2,7 @@
   <h1>List of Canvases </h1>
   <ul>
   <%= for i <- (1..length(@canvases)-1) do %>
-    <li><a href="<%= Routes.canvas_path(CanvasWeb.Endpoint, :index, Enum.at(@canvases, i).id) %>">Canvas #<%= i + 1 %></a></li>
+    <li><a href="<%= Routes.canvas_path(CanvasWeb.Endpoint, :index, Enum.at(@canvases, i).id) %>">Canvas #<%= Enum.at(@canvases, i).id %></a></li>
   <% end %>
   </ul>
 </section>
