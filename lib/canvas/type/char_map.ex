@@ -4,7 +4,7 @@ defmodule Canvas.Type.CharMap do
   """
   @behaviour Ecto.Type
 
-  @ascii_char_codes 32..126
+  import Canvas.Utils
 
   def type, do: :binary
 
@@ -26,8 +26,7 @@ defmodule Canvas.Type.CharMap do
 
   defp valid_char_map_item?({{x, y}, v})
        when is_number(x) and is_number(y) and x >= 0 and y >= 0 do
-    char_codes = String.to_charlist(v)
-    length(char_codes) == 1 && hd(char_codes) in @ascii_char_codes
+    ascii_char?(v)
   end
 
   defp valid_char_map_item?(_), do: false

@@ -47,7 +47,8 @@ defmodule Canvas.MixProject do
       {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.4"},
       {:postgrex, "~> 0.15"},
-      {:credo, "~> 1.4", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:open_api_spex, "~> 3.8"}
     ]
   end
 

@@ -4,14 +4,14 @@ defmodule Canvas.Type.AsciiChar do
   """
   @behaviour Ecto.Type
 
-  @ascii_char_codes 32..126
+  import Canvas.Utils
 
   def type, do: :integer
 
   def cast(nil), do: :error
 
   def cast(char) when is_binary(char) do
-    if String.length(char) == 1 && char_code(char) in @ascii_char_codes do
+    if ascii_char?(char) do
       {:ok, char}
     else
       :error

@@ -26,20 +26,20 @@ defmodule CanvasWeb.CanvasControllerTest do
       conn =
         post(conn, Routes.canvas_path(conn, :new), canvas: %{rows: 0, cols: 3, fill_char: " "})
 
-      assert %{"error" => "Rows number is out of range (1 to 200)"} = json_response(conn, 400)
+      assert %{"error" => "Rows number is out of range (1 to 200)"} = json_response(conn, 422)
     end
 
     test "returns error when fill char is not valid ASCII char", %{conn: conn} do
       conn =
         post(conn, Routes.canvas_path(conn, :new), canvas: %{rows: 3, cols: 3, fill_char: "Ф"})
 
-      assert %{"error" => "Ф is not a single ASCII char"} = json_response(conn, 400)
+      assert %{"error" => "Ф is not a single ASCII char"} = json_response(conn, 422)
     end
 
     test "returns error when fill char is not defined", %{conn: conn} do
       conn = post(conn, Routes.canvas_path(conn, :new), canvas: %{rows: 3, cols: 3})
 
-      assert %{"error" => "missing required parameter"} = json_response(conn, 400)
+      assert %{"error" => "missing required parameter"} = json_response(conn, 422)
     end
   end
 
@@ -80,7 +80,7 @@ defmodule CanvasWeb.CanvasControllerTest do
           rectangle: %{col: 0, row: 0, height: 2, fc: "O"}
         )
 
-      assert %{"error" => "missing required parameter"} = json_response(conn, 400)
+      assert %{"error" => "missing required parameter"} = json_response(conn, 422)
 
       conn =
         post(conn, Routes.canvas_path(conn, :draw, id),
@@ -88,7 +88,7 @@ defmodule CanvasWeb.CanvasControllerTest do
         )
 
       assert %{"error" => "One of either fill or outline character should always be present"} =
-               json_response(conn, 400)
+               json_response(conn, 422)
 
       conn =
         post(conn, Routes.canvas_path(conn, :draw, id),
@@ -96,7 +96,7 @@ defmodule CanvasWeb.CanvasControllerTest do
         )
 
       assert %{"error" => "Row position is out of canvas max size (1 to 200)"} =
-               json_response(conn, 400)
+               json_response(conn, 422)
     end
   end
 

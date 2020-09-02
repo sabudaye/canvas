@@ -12,6 +12,7 @@ defmodule CanvasWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug OpenApiSpex.Plug.PutApiSpec, module: CanvasWeb.ApiSpec
   end
 
   scope "/", CanvasWeb do
@@ -21,12 +22,22 @@ defmodule CanvasWeb.Router do
     live "/canvas/:id", CanvasLive, :index
   end
 
+  scope "/" do
+    pipe_through :browser
+    get "/swaggerui", OpenApiSpex.Plug.SwaggerUI, path: "/api/openapi"
+  end
+
   scope "/api", CanvasWeb do
     pipe_through :api
 
     post "/canvas", CanvasController, :new
     get "/canvas/:id", CanvasController, :show
     post "/canvas/:id/draw", CanvasController, :draw
+  end
+
+  scope "/api" do
+    pipe_through :api
+    get "/openapi", OpenApiSpex.Plug.RenderSpec, []
   end
 
   # Enables LiveDashboard only for development

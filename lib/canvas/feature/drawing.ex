@@ -6,13 +6,13 @@ defmodule Canvas.Feature.Drawing do
   alias Canvas.Schema.CanvasMap
 
   import Ecto.Query
+  import Canvas.Utils
 
   @default_canvas_cols 21
   @default_canvas_rows 8
   @default_canvas_fill_char " "
   @position_range 0..199
   @size_range 1..200
-  @ascii_char_codes 32..126
 
   def all do
     Repo.all(from cm in CanvasMap, select: %{id: cm.id})
@@ -154,11 +154,6 @@ defmodule Canvas.Feature.Drawing do
     else
       _ -> {:error, "Canvas #{canvas_id} not found"}
     end
-  end
-
-  defp ascii_char?(char) do
-    char_codes = String.to_charlist(char)
-    length(char_codes) == 1 && hd(char_codes) in @ascii_char_codes
   end
 
   defp flood(chars, _flood_char, _char_to_replace, [], _touched_chars) do
