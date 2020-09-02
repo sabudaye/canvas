@@ -21,6 +21,83 @@ defmodule CanvasWeb.CanvasControllerTest do
                }
              } = json_response(conn, 200)["data"]
     end
+
+    test "returns error when row number is not valid", %{conn: conn} do
+      conn =
+        post(conn, Routes.canvas_path(conn, :new), canvas: %{rows: 0, cols: 3, fill_char: " "})
+
+      assert %{"error" => "Rows number is out of range (1 to 200)"} = json_response(conn, 400)
+    end
+
+    test "returns error when fill char is not valid ASCII char", %{conn: conn} do
+      conn =
+        post(conn, Routes.canvas_path(conn, :new), canvas: %{rows: 3, cols: 3, fill_char: "Ф"})
+
+      assert %{"error" => "Ф is not a single ASCII char"} = json_response(conn, 400)
+    end
+
+    test "returns error when fill char is not defined", %{conn: conn} do
+      conn = post(conn, Routes.canvas_path(conn, :new), canvas: %{rows: 3, cols: 3})
+
+      assert %{"error" => "missing required parameter"} = json_response(conn, 400)
+    end
+  end
+
+  describe "draw rectangle" do
+    test "draws rectangle on canvas when data is valid", %{conn: conn} do
+      conn =
+        post(conn, Routes.canvas_path(conn, :new), canvas: %{rows: 3, cols: 3, fill_char: " "})
+
+      assert %{"id" => id} = json_response(conn, 201)["data"]
+
+      conn =
+        post(conn, Routes.canvas_path(conn, :draw, id),
+          rectangle: %{col: 0, row: 0, width: 2, height: 2, fc: "O"}
+        )
+
+      conn = get(conn, Routes.canvas_path(conn, :show, id))
+
+      assert %{
+               "id" => id,
+               "rows" => 3,
+               "cols" => 3,
+               "chars" => %{
+                 "0" => %{"0" => "O", "1" => "O", "2" => " "},
+                 "1" => %{"0" => "O", "1" => "O", "2" => " "},
+                 "2" => %{"0" => " ", "1" => " ", "2" => " "}
+               }
+             } = json_response(conn, 200)["data"]
+    end
+
+    test "returns error when rectangle paramteres are not valid", %{conn: conn} do
+      conn =
+        post(conn, Routes.canvas_path(conn, :new), canvas: %{rows: 3, cols: 3, fill_char: " "})
+
+      assert %{"id" => id} = json_response(conn, 201)["data"]
+
+      conn =
+        post(conn, Routes.canvas_path(conn, :draw, id),
+          rectangle: %{col: 0, row: 0, height: 2, fc: "O"}
+        )
+
+      assert %{"error" => "missing required parameter"} = json_response(conn, 400)
+
+      conn =
+        post(conn, Routes.canvas_path(conn, :draw, id),
+          rectangle: %{col: 0, row: 0, width: 2, height: 2}
+        )
+
+      assert %{"error" => "One of either fill or outline character should always be present"} =
+               json_response(conn, 400)
+
+      conn =
+        post(conn, Routes.canvas_path(conn, :draw, id),
+          rectangle: %{col: -1, row: 201, width: 2, height: 2}
+        )
+
+      assert %{"error" => "Row position is out of canvas max size (1 to 200)"} =
+               json_response(conn, 400)
+    end
   end
 
   describe "Test fixture 1" do
@@ -298,26 +375,18 @@ defmodule CanvasWeb.CanvasControllerTest do
           rectangle: %{col: 14, row: 0, width: 7, height: 6, fc: "."}
         )
 
-      assert %{"id" => id} = json_response(conn, 200)["data"]
-
       conn =
         post(conn, Routes.canvas_path(conn, :draw, id),
           rectangle: %{col: 0, row: 3, width: 8, height: 4, oc: "O"}
         )
-
-      assert %{"id" => id} = json_response(conn, 200)["data"]
 
       conn =
         post(conn, Routes.canvas_path(conn, :draw, id),
           rectangle: %{col: 5, row: 5, width: 5, height: 3, oc: "X", fc: "X"}
         )
 
-      assert %{"id" => id} = json_response(conn, 200)["data"]
-
       conn =
         post(conn, Routes.canvas_path(conn, :draw, id), flood_fill: %{col: 0, row: 0, fc: "-"})
-
-      assert %{"id" => id} = json_response(conn, 200)["data"]
 
       conn = get(conn, Routes.canvas_path(conn, :show, id))
 

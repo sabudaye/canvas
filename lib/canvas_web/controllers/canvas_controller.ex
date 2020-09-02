@@ -11,12 +11,17 @@ defmodule CanvasWeb.CanvasController do
       |> put_status(:created)
       |> put_resp_header("location", Routes.canvas_path(conn, :show, canvas))
       |> render("show.json", %{canvas: canvas})
+    else
+      {:error, message} -> send_error(conn, message)
+      _ -> send_error(conn, "missing required parameter")
     end
   end
 
   def show(conn, %{"id" => canvas_id}) do
     with {:ok, canvas} <- Drawing.get(canvas_id) do
       render(conn, "show.json", %{canvas: canvas})
+    else
+      {:error, message} -> send_error(conn, message)
     end
   end
 
@@ -32,6 +37,9 @@ defmodule CanvasWeb.CanvasController do
          },
          {:ok, new_canvas} <- Drawing.add_rectangle(canvas_id, rectangle) do
       render(conn, "show.json", %{canvas: new_canvas})
+    else
+      {:error, message} -> send_error(conn, message)
+      _ -> send_error(conn, "missing required parameter")
     end
   end
 
@@ -44,13 +52,20 @@ defmodule CanvasWeb.CanvasController do
          },
          {:ok, new_canvas} <- Drawing.flood_fill(canvas_id, flood_fill) do
       render(conn, "show.json", %{canvas: new_canvas})
+    else
+      {:error, message} -> send_error(conn, message)
+      _ -> send_error(conn, "missing required parameter")
     end
   end
 
   def draw(conn, _params) do
+    send_error(conn, "drawing parameters are not correct")
+  end
+
+  def send_error(conn, message) do
     conn
     |> put_status(:bad_request)
-    |> render("error.json", %{})
+    |> json(%{error: message})
   end
 
   defp to_int(val) when is_integer(val), do: val
