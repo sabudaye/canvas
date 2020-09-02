@@ -2,9 +2,8 @@ defmodule Canvas.Feature.Drawing do
   @moduledoc """
   Feature module for drawing on canvas
   """
-  alias Canvas.{Rectangle, FloodFill}
+  alias Canvas.{FloodFill, Rectangle, Repo}
   alias Canvas.Schema.CanvasMap
-  alias Canvas.Repo
 
   import Ecto.Query
 
@@ -15,7 +14,7 @@ defmodule Canvas.Feature.Drawing do
   @size_range 1..200
   @ascii_char_codes 32..126
 
-  def all() do
+  def all do
     Repo.all(from cm in CanvasMap, select: %{id: cm.id})
   end
 

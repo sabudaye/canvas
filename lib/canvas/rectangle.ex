@@ -11,19 +11,65 @@ defmodule Canvas.Rectangle do
             fill_char: nil,
             outline_char: nil
 
-  def char_type(row, col, %Rectangle{pos_col: x, pos_row: y, height: h, width: w}) do
+  def char_type(char_row, char_col, %Rectangle{} = rectangle) do
     cond do
-      (row == y || row == y + h - 1) && Enum.member?(x..(x + w - 1), col) ->
+      top_border(char_row, char_col, rectangle) ->
         :outline
 
-      (col == x || col == x + w - 1) && Enum.member?(y..(y + h - 1), row) ->
+      bottom_border(char_row, char_col, rectangle) ->
         :outline
 
-      Enum.member?((y + 1)..(y + h - 2), row) && Enum.member?((x + 1)..(x + w - 2), col) ->
+      left_border(char_row, char_col, rectangle) ->
+        :outline
+
+      right_border(char_row, char_col, rectangle) ->
+        :outline
+
+      inside(char_row, char_col, rectangle) ->
         :fill
 
       true ->
         :outside
     end
+  end
+
+  defp top_border(char_row, char_col, %Rectangle{pos_col: pos_col, pos_row: pos_row, width: width}) do
+    char_row == pos_row && Enum.member?(pos_col..(pos_col + width - 1), char_col)
+  end
+
+  defp bottom_border(char_row, char_col, %Rectangle{
+         pos_col: pos_col,
+         pos_row: pos_row,
+         width: width,
+         height: height
+       }) do
+    char_row == pos_row + height - 1 && Enum.member?(pos_col..(pos_col + width - 1), char_col)
+  end
+
+  defp left_border(char_row, char_col, %Rectangle{
+         pos_col: pos_col,
+         pos_row: pos_row,
+         height: height
+       }) do
+    char_col == pos_col && Enum.member?(pos_row..(pos_row + height - 1), char_row)
+  end
+
+  defp right_border(char_row, char_col, %Rectangle{
+         pos_col: pos_col,
+         pos_row: pos_row,
+         width: width,
+         height: height
+       }) do
+    char_col == pos_col + width - 1 && Enum.member?(pos_row..(pos_row + height - 1), char_row)
+  end
+
+  defp inside(char_row, char_col, %Rectangle{
+         pos_col: pos_col,
+         pos_row: pos_row,
+         width: width,
+         height: height
+       }) do
+    Enum.member?((pos_row + 1)..(pos_row + height - 2), char_row) &&
+      Enum.member?((pos_col + 1)..(pos_col + width - 2), char_col)
   end
 end

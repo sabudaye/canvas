@@ -1,4 +1,8 @@
 defmodule Canvas.LiveUpdates do
+  @moduledoc """
+  Canvas.LiveUpdates provides API functions for interactions between Phoenix LiveView porcesses
+  showing the canvas state and other parts of application
+  """
   @topic inspect(__MODULE__)
 
   @doc "subscribe for canvas"

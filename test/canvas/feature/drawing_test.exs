@@ -1,7 +1,8 @@
 defmodule Canvas.Feature.DrawingTest do
   use Canvas.DataCase
-  alias Canvas.{Rectangle, FloodFill}
+
   alias Canvas.Feature.Drawing
+  alias Canvas.{FloodFill, Rectangle}
 
   test "new/0 returns map with {x, y} as keys and fill char as value" do
     {:ok, canvas} = Drawing.new(3, 3, " ")

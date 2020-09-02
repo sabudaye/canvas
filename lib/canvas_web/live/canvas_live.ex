@@ -1,4 +1,7 @@
 defmodule CanvasWeb.CanvasLive do
+  @moduledoc """
+  Phoenix Liveview Live controller for canvas show page
+  """
   use CanvasWeb, :live_view
 
   alias Canvas.Feature.Drawing

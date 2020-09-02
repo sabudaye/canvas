@@ -1,4 +1,7 @@
 defmodule CanvasWeb.Telemetry do
+  @moduledoc """
+  Telemetry for Liveview Dashboard
+  """
   use Supervisor
   import Telemetry.Metrics
 

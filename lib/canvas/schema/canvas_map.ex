@@ -1,4 +1,7 @@
 defmodule Canvas.Schema.CanvasMap do
+  @moduledoc """
+  Ecto schema for CanvasMap data structure
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

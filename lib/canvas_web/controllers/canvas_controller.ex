@@ -1,8 +1,8 @@
 defmodule CanvasWeb.CanvasController do
   use CanvasWeb, :controller
 
-  alias Canvas.{Rectangle, FloodFill}
   alias Canvas.Feature.Drawing
+  alias Canvas.{FloodFill, Rectangle}
 
   def new(conn, %{"canvas" => canvas_params}) do
     with %{"rows" => rows, "cols" => cols, "fill_char" => fill_char} <- canvas_params,
@@ -22,7 +22,7 @@ defmodule CanvasWeb.CanvasController do
 
   def draw(conn, %{"id" => canvas_id, "rectangle" => rectangle_params}) do
     with %{"row" => row, "col" => col, "width" => width, "height" => height} <- rectangle_params,
-         rectangle = %Rectangle{
+         rectangle <- %Rectangle{
            pos_row: to_int(row),
            pos_col: to_int(col),
            width: to_int(width),
@@ -30,19 +30,19 @@ defmodule CanvasWeb.CanvasController do
            fill_char: rectangle_params["fc"],
            outline_char: rectangle_params["oc"]
          },
-         {:ok, new_canvas} = Drawing.add_rectangle(canvas_id, rectangle) do
+         {:ok, new_canvas} <- Drawing.add_rectangle(canvas_id, rectangle) do
       render(conn, "show.json", %{canvas: new_canvas})
     end
   end
 
   def draw(conn, %{"id" => canvas_id, "flood_fill" => flood_fill_params}) do
     with %{"row" => row, "col" => col, "fc" => fc} <- flood_fill_params,
-         flood_fill = %FloodFill{
+         flood_fill <- %FloodFill{
            pos_row: to_int(row),
            pos_col: to_int(col),
            flood_char: fc
          },
-         {:ok, new_canvas} = Drawing.flood_fill(canvas_id, flood_fill) do
+         {:ok, new_canvas} <- Drawing.flood_fill(canvas_id, flood_fill) do
       render(conn, "show.json", %{canvas: new_canvas})
     end
   end
