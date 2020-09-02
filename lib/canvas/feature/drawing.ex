@@ -54,6 +54,8 @@ defmodule Canvas.Feature.Drawing do
       ) do
     with {:rows, true} <- {:rows, row in @position_range},
          {:cols, true} <- {:cols, col in @position_range},
+         {:width, true} <- {:width, rectangle.width in @size_range},
+         {:height, true} <- {:height, rectangle.height in @size_range},
          {:char, outline_char, fill_char} <- one_of_either(oc, fc),
          {:char, true} <- {:char, ascii_char?(outline_char)},
          {:char, true} <- {:char, ascii_char?(fill_char)},
@@ -74,6 +76,12 @@ defmodule Canvas.Feature.Drawing do
 
       {:cols, _} ->
         {:error, "Column position is out of canvas max size (1 to 200)"}
+
+      {:width, _} ->
+        {:error, "Width is out of valid range 1 to 200"}
+
+      {:height, _} ->
+        {:error, "Height is out of valid range 1 to 200"}
 
       {:char, :none} ->
         {:error, "One of either fill or outline character should always be present"}
